@@ -1,6 +1,6 @@
 const LoginButton = ({ onLogin, loading }) => {
   return (
-    <button id="login-button" onClick={onLogin} disabled={loading}>
+    <button onClick={onLogin} disabled={loading}>
       {loading ? "Logging in..." : "Log in with Spotify"}
     </button>
   );

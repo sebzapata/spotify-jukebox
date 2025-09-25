@@ -18,7 +18,7 @@ export const useSpotifyAuth = () => {
   );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Utility functions
   const generateRandomString = (length) => {
@@ -81,7 +81,6 @@ export const useSpotifyAuth = () => {
 
   const exchangeToken = async (code) => {
     const codeVerifier = localStorage.getItem("code_verifier");
-    setLoading(true);
 
     try {
       const response = await fetch("https://accounts.spotify.com/api/token", {
@@ -105,7 +104,6 @@ export const useSpotifyAuth = () => {
       window.history.replaceState({}, document.title, "/");
     } catch (error) {
       handleError(error);
-    } finally {
       setLoading(false);
     }
   };
@@ -156,9 +154,16 @@ export const useSpotifyAuth = () => {
   };
 
   const getUserData = async (token = accessToken) => {
-    if (!token) return;
+    if (!token) {
+      setLoading(false);
 
-    setLoading(true);
+      return;
+    }
+
+    // Don't set loading to true if we're already loading (during initial auth flow)
+    if (!loading) {
+      setLoading(true);
+    }
 
     try {
       const response = await fetch("https://api.spotify.com/v1/me", {
@@ -192,6 +197,7 @@ export const useSpotifyAuth = () => {
     setExpiresAt(null);
     setIsLoggedIn(false);
     setError(null);
+    setLoading(false);
   };
 
   const handleError = (error) => {
@@ -214,6 +220,9 @@ export const useSpotifyAuth = () => {
     } else if (accessToken && refreshToken && expiresAt) {
       // We are already authorized and reload our tokens from localStorage
       getUserData();
+    } else {
+      // No auth data found, stop loading
+      setLoading(false);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

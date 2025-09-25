@@ -9,6 +9,7 @@ import "./App.css";
 import { useQuery } from "@tanstack/react-query";
 import { getPlaybackState } from "./service/getPlaybackState";
 import PlaylistInfo from "./components/playlistInfo";
+import LoginScreen from "./components/LoginScreen";
 
 function App() {
   const {
@@ -24,20 +25,26 @@ function App() {
     logout,
   } = useSpotifyAuth();
 
-  if (!isLoggedIn) {
+  if (loading) {
     return (
-      <div id="login">
-        <h1>
-          This is an example of the Authorization Code Flow with Proof Key for
-          Code Exchange (PKCE)
-        </h1>
-        <LoginButton onLogin={login} loading={loading} />
-        <ErrorDisplay error={error} />
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">Loading...</p>
       </div>
     );
   }
 
-  return <PlaylistInfo />;
+  if (!isLoggedIn) {
+    return <LoginScreen loading={loading} login={login} />;
+  }
+
+  return (
+    <div className="max-w-7xl mx-auto p-8 text-center min-h-screen">
+      <div className="absolute top-4 right-4">
+        <LogoutButton onLogout={logout} />
+      </div>
+      <PlaylistInfo />
+    </div>
+  );
 
   return (
     <div id="loggedin">

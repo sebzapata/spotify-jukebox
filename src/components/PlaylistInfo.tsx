@@ -88,11 +88,13 @@ const PlaylistInfo = () => {
         >
           <div className="flex gap-4 items-center">
             <p>
-              {`${song.track.name} by ${song.track.artists
-                .map((artist) => artist.name)
-                .join(" & ")} from the album ${song.track.album.name}`}
+              {`${song.track.name} by ${song.track.artists[0].name}
+                `}
             </p>
-            <button onClick={() => addToPlaybackQueueFn(song.track.uri)}>
+            <button
+              onClick={() => addToPlaybackQueueFn(song.track.uri)}
+              className="p-1 px-1.5"
+            >
               Add to queue
             </button>
           </div>

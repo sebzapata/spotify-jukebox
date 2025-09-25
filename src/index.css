@@ -1,5 +1,4 @@
-@import "tailwindcss";
-
+/* Custom base styles that can be overridden by Tailwind */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -7,7 +6,8 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+
+  /* background-color: #242424; */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -44,7 +44,7 @@ button {
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #6a7282;
   cursor: pointer;
   transition: border-color 0.25s;
 }
@@ -68,3 +68,7 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* Import Tailwind AFTER custom styles so utilities can override them */
+@import "tailwindcss/theme";
+@import "tailwindcss/utilities";
