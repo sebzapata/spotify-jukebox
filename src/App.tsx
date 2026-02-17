@@ -10,6 +10,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getPlaybackState } from "./service/getPlaybackState";
 import PlaylistInfo from "./components/playlistInfo";
 import LoginScreen from "./components/LoginScreen";
+import HomeScreen from "./components/HomeScreen";
+import PickPlaylistScreen from "./components/PickPlaylistScreen";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
   const {
@@ -36,6 +39,15 @@ function App() {
   if (!isLoggedIn) {
     return <LoginScreen loading={loading} login={login} />;
   }
+
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/pick-a-playlist" element={<PickPlaylistScreen />} />
+      </Routes>
+    </Router>
+  );
 
   return (
     <div className="max-w-7xl mx-auto p-8 text-center min-h-screen">

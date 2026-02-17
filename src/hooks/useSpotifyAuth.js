@@ -8,13 +8,13 @@ const REDIRECT_URI = "http://127.0.0.1:8080/";
 export const useSpotifyAuth = () => {
   const [user, setUser] = useState(null);
   const [accessToken, setAccessToken] = useState(
-    localStorage.getItem("access_token") || null
+    localStorage.getItem("access_token") || null,
   );
   const [refreshToken, setRefreshToken] = useState(
-    localStorage.getItem("refresh_token") || null
+    localStorage.getItem("refresh_token") || null,
   );
   const [expiresAt, setExpiresAt] = useState(
-    localStorage.getItem("expires_at") || null
+    localStorage.getItem("expires_at") || null,
   );
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [error, setError] = useState(null);
@@ -35,7 +35,7 @@ export const useSpotifyAuth = () => {
   const generateCodeChallenge = async (codeVerifier) => {
     const digest = await crypto.subtle.digest(
       "SHA-256",
-      new TextEncoder().encode(codeVerifier)
+      new TextEncoder().encode(codeVerifier),
     );
 
     return btoa(String.fromCharCode(...new Uint8Array(digest)))
@@ -71,11 +71,11 @@ export const useSpotifyAuth = () => {
         response_type: "code",
         client_id: CLIENT_ID,
         scope:
-          "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state",
+          "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state playlist-read-private",
         code_challenge_method: "S256",
         code_challenge: codeChallenge,
         redirect_uri: REDIRECT_URI,
-      }
+      },
     );
   };
 
