@@ -6,6 +6,7 @@ import { getPlaylist } from "../service/getPlaylist";
 import { getPlaybackState } from "../service/getPlaybackState";
 import { addToPlaybackQueue } from "../service/addToPlaybackQueue";
 import LogoutButton from "./LogoutButton";
+import { getPlaybackQueue } from "../service/getPlaybackQueue";
 
 const JukeboxScreen = () => {
   const { playlistId } = useParams<{ playlistId: string }>();
@@ -46,11 +47,24 @@ const JukeboxScreen = () => {
     },
   });
 
+  const { data: playbackQueueData } = useQuery({
+    queryKey: ["getPlaybackQueue", accessToken],
+    queryFn: () => {
+      if (accessToken) {
+        return getPlaybackQueue(accessToken);
+      }
+    },
+  });
+
   const { mutate: addToQueue } = useMutation({
     mutationFn: (trackUri: string) => {
+      console.log("accessToken", accessToken);
+      console.log("deviceData", deviceData);
+
       if (accessToken && deviceData) {
         return addToPlaybackQueue(accessToken, deviceData.device.id, trackUri);
       }
+
       return Promise.resolve();
     },
   });
@@ -67,17 +81,18 @@ const JukeboxScreen = () => {
   return (
     <div className="flex flex-col gap-4 items-center min-h-screen p-8 w-4xl">
       <div className="w-full">
-        <div className="flex justify-between items-center mb-6">
+        <div className="grid grid-cols-3 items-center mb-6">
           <button
             onClick={() => navigate("/pick-a-playlist")}
-            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300"
+            className="bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300 justify-self-start"
           >
             ← Change Playlist
           </button>
-          <LogoutButton onLogout={logout} />
+          <h1 className="text-2xl font-bold text-center">{playlistName}</h1>
+          <div className="justify-self-end">
+            <LogoutButton onLogout={logout} />
+          </div>
         </div>
-
-        <h1 className="text-2xl font-bold mb-4">{playlistName}</h1>
 
         {isFetching && allTracks.length === 0 ? (
           <p className="text-gray-500">Loading tracks...</p>
