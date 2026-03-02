@@ -5,12 +5,17 @@ import { useSpotifyAuth } from "../hooks/useSpotifyAuth";
 import {
   getAllPlaylists,
   GetAllPlaylistsResponse,
+  PlaylistItem,
 } from "../service/getAllPlaylists";
+import PlaylistModal from "./PlaylistModal";
 
 const PickPlaylistScreen = () => {
   const navigate = useNavigate();
   const { accessToken } = useSpotifyAuth();
   const [offset, setOffset] = useState(0);
+  const [selectedPlaylist, setSelectedPlaylist] = useState<PlaylistItem | null>(
+    null,
+  );
 
   const {
     data: playlistsResponse,
@@ -84,7 +89,7 @@ const PickPlaylistScreen = () => {
                 <div
                   key={playlist.id}
                   className="border rounded-lg p-4 hover:shadow-lg cursor-pointer transition-shadow"
-                  onClick={() => console.log("Selected playlist:", playlist.id)}
+                  onClick={() => setSelectedPlaylist(playlist)}
                 >
                   {playlist.images && playlist.images[0] ? (
                     <img
@@ -135,6 +140,14 @@ const PickPlaylistScreen = () => {
           </>
         )}
       </div>
+
+      {selectedPlaylist && (
+        <PlaylistModal
+          playlist={selectedPlaylist}
+          onClose={() => setSelectedPlaylist(null)}
+          onConfirm={() => navigate(`/jukebox/${selectedPlaylist.id}`)}
+        />
+      )}
     </div>
   );
 };

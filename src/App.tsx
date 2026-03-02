@@ -12,6 +12,7 @@ import PlaylistInfo from "./components/playlistInfo";
 import LoginScreen from "./components/LoginScreen";
 import HomeScreen from "./components/HomeScreen";
 import PickPlaylistScreen from "./components/PickPlaylistScreen";
+import JukeboxScreen from "./components/JukeboxScreen";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -45,6 +46,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomeScreen />} />
         <Route path="/pick-a-playlist" element={<PickPlaylistScreen />} />
+        <Route path="/jukebox/:playlistId" element={<JukeboxScreen />} />
       </Routes>
     </Router>
   );
