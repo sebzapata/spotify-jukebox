@@ -1,6 +1,6 @@
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSpotifyAuth } from "../hooks/useSpotifyAuth";
 import { getPlaylist } from "../service/getPlaylist";
 import { getPlaybackState } from "../service/getPlaybackState";
@@ -10,6 +10,8 @@ import LogoutButton from "./LogoutButton";
 const JukeboxScreen = () => {
   const { playlistId } = useParams<{ playlistId: string }>();
   const navigate = useNavigate();
+  const { state } = useLocation();
+  const playlistName: string = state?.playlistName ?? "Playlist";
   const { accessToken, logout } = useSpotifyAuth();
 
   const {
@@ -63,8 +65,8 @@ const JukeboxScreen = () => {
     playlistData?.pages.flatMap((page) => page?.items ?? []) ?? [];
 
   return (
-    <div className="flex flex-col gap-4 items-center min-h-screen p-8">
-      <div className="w-full max-w-2xl">
+    <div className="flex flex-col gap-4 items-center min-h-screen p-8 w-4xl">
+      <div className="w-full">
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={() => navigate("/pick-a-playlist")}
@@ -75,7 +77,7 @@ const JukeboxScreen = () => {
           <LogoutButton onLogout={logout} />
         </div>
 
-        <h1 className="text-2xl font-bold mb-4">Add Songs to Queue</h1>
+        <h1 className="text-2xl font-bold mb-4">{playlistName}</h1>
 
         {isFetching && allTracks.length === 0 ? (
           <p className="text-gray-500">Loading tracks...</p>
@@ -84,12 +86,14 @@ const JukeboxScreen = () => {
             {allTracks.map((item, i) => (
               <li
                 key={`${item.track.uri}-${i}`}
-                className="flex items-center justify-between p-4"
+                className="flex items-center justify-between p-2"
               >
-                <div>
-                  <p className="font-medium">{item.track.name}</p>
-                  <p className="text-sm text-gray-500">
-                    {item.track.artists.map((a) => a.name).join(", ")}
+                <div className="flex items-baseline gap-2 min-w-0 w-full">
+                  <p className="font-medium truncate shrink-0 max-w-2/3">
+                    {item.track.name}
+                  </p>
+                  <p className="text-sm text-gray-300 truncate min-w-0">
+                    {item.track.artists[0].name}
                   </p>
                 </div>
                 <button

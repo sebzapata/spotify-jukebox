@@ -145,7 +145,11 @@ const PickPlaylistScreen = () => {
         <PlaylistModal
           playlist={selectedPlaylist}
           onClose={() => setSelectedPlaylist(null)}
-          onConfirm={() => navigate(`/jukebox/${selectedPlaylist.id}`)}
+          onConfirm={() =>
+            navigate(`/jukebox/${selectedPlaylist.id}`, {
+              state: { playlistName: selectedPlaylist.name },
+            })
+          }
         />
       )}
     </div>

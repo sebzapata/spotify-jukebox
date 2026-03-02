@@ -54,11 +54,11 @@ const PlaylistModal = ({
       onClick={onClose}
     >
       <div
-        className="bg-gray-100 rounded-xl w-full max-w-2xl flex flex-col max-h-[85vh]"
+        className="bg-gray-100 rounded-xl overflow-hidden w-full max-w-2xl flex flex-col max-h-[85vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center gap-4 p-6 border-b">
+        <div className="flex items-center gap-4 p-6 border-b bg-gray-300">
           {playlist.images[0] ? (
             <img
               src={playlist.images[0].url}
@@ -70,26 +70,31 @@ const PlaylistModal = ({
               <span className="text-2xl">🎵</span>
             </div>
           )}
-          <div>
-            <h2 className="text-xl font-bold text-gray-900">{playlist.name}</h2>
-            <p className="text-sm text-gray-600">
+          <div className="flex items-center justify-between w-full min-w-0 gap-2">
+            <h2 className="text-xl font-bold text-gray-900 truncate min-w-0">
+              {playlist.name}
+            </h2>
+            <p className="text-sm text-gray-600 flex-shrink-0">
               {playlist.tracks.total} tracks
             </p>
           </div>
         </div>
 
         {/* Track list */}
-        <div className="overflow-y-auto flex-1 p-4">
+        <div className="overflow-y-auto flex-1 p-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-300">
           {isFetching && allTracks.length === 0 ? (
             <p className="text-center text-gray-600 py-8">Loading tracks...</p>
           ) : (
-            <ul className="divide-y">
+            <ul className="divide-y mbs-0 mbe-0 ps-0 flex flex-col gap-2">
               {allTracks.map((item, i) => (
-                <li key={`${item.track.uri}-${i}`} className="py-3 px-2">
-                  <p className="font-medium text-gray-900">{item.track.name}</p>
-                  <p className="text-sm text-gray-600">
-                    {item.track.artists.map((a) => a.name).join(", ")}
-                  </p>
+                <li key={`${item.track.uri}-${i}`} className="flex px-4">
+                  <span className="font-medium text-sm text-gray-900">
+                    {item.track.name}
+                  </span>
+
+                  <span className="text-sm text-gray-600">
+                    &nbsp;{`- ${item.track.artists[0].name}`}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -102,7 +107,7 @@ const PlaylistModal = ({
         </div>
 
         {/* Footer */}
-        <div className="flex gap-3 p-6 border-t">
+        <div className="flex gap-3 p-6 border-t bg-gray-300">
           <button
             onClick={onClose}
             className="flex-1 border border-gray-400 text-gray-800 bg-white px-4 py-2 rounded-lg hover:bg-gray-50"

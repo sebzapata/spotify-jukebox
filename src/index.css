@@ -72,3 +72,5 @@ button:focus-visible {
 /* Import Tailwind AFTER custom styles so utilities can override them */
 @import "tailwindcss/theme";
 @import "tailwindcss/utilities";
+@import "tailwindcss";
+@plugin "tailwind-scrollbar";
