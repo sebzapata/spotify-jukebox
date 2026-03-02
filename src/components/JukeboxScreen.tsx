@@ -1,12 +1,12 @@
-import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useEffect, useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useSpotifyAuth } from "../hooks/useSpotifyAuth";
+import { useSpotifyPlayer } from "../hooks/useSpotifyPlayer";
 import { getPlaylist } from "../service/getPlaylist";
-import { getPlaybackState } from "../service/getPlaybackState";
 import { addToPlaybackQueue } from "../service/addToPlaybackQueue";
+import { startPlayback } from "../service/startPlayback";
 import LogoutButton from "./LogoutButton";
-import { getPlaybackQueue } from "../service/getPlaybackQueue";
 
 const JukeboxScreen = () => {
   const { playlistId } = useParams<{ playlistId: string }>();
@@ -14,6 +14,8 @@ const JukeboxScreen = () => {
   const { state } = useLocation();
   const playlistName: string = state?.playlistName ?? "Playlist";
   const { accessToken, logout } = useSpotifyAuth();
+  const { deviceId, isReady } = useSpotifyPlayer(accessToken);
+  const hasStartedPlayback = useRef(false);
 
   const {
     data: playlistData,
@@ -38,36 +40,26 @@ const JukeboxScreen = () => {
     refetchOnWindowFocus: false,
   });
 
-  const { data: deviceData } = useQuery({
-    queryKey: ["getPlaybackState", accessToken],
-    queryFn: () => {
-      if (accessToken) {
-        return getPlaybackState(accessToken);
-      }
-    },
-  });
-
-  const { data: playbackQueueData } = useQuery({
-    queryKey: ["getPlaybackQueue", accessToken],
-    queryFn: () => {
-      if (accessToken) {
-        return getPlaybackQueue(accessToken);
-      }
-    },
-  });
-
   const { mutate: addToQueue } = useMutation({
     mutationFn: (trackUri: string) => {
-      console.log("accessToken", accessToken);
-      console.log("deviceData", deviceData);
-
-      if (accessToken && deviceData) {
-        return addToPlaybackQueue(accessToken, deviceData.device.id, trackUri);
+      if (accessToken && deviceId) {
+        return addToPlaybackQueue(accessToken, deviceId, trackUri);
       }
-
       return Promise.resolve();
     },
   });
+
+  useEffect(() => {
+    if (hasStartedPlayback.current) return;
+    if (!isReady || !accessToken || !playlistId || !deviceId) return;
+
+    hasStartedPlayback.current = true;
+    startPlayback(
+      accessToken,
+      deviceId,
+      `spotify:playlist:${playlistId}`,
+    ).catch((err) => console.error("Failed to start playback:", err));
+  }, [isReady, accessToken, playlistId, deviceId]);
 
   useEffect(() => {
     if (!playlistData || isFetching || !hasNextPage) return;

@@ -1,5 +1,9 @@
 import { useState, useEffect } from "react";
 
+// Module-level guard — survives React Strict Mode unmount/remount cycles
+// (unlike useRef, which is re-initialised to false on each remount)
+let codeExchangeAttempted = false;
+
 // Your client id from your app in the spotify dashboard:
 // https://developer.spotify.com/dashboard/applications
 const CLIENT_ID = "60ec6414275d4b47a01f60b02b6775b5";
@@ -71,7 +75,7 @@ export const useSpotifyAuth = () => {
         response_type: "code",
         client_id: CLIENT_ID,
         scope:
-          "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state playlist-read-private",
+          "user-read-private user-read-email user-read-currently-playing user-read-playback-state user-modify-playback-state playlist-read-private streaming app-remote-control",
         code_challenge_method: "S256",
         code_challenge: codeChallenge,
         redirect_uri: REDIRECT_URI,
@@ -99,9 +103,6 @@ export const useSpotifyAuth = () => {
 
       const data = await addThrowErrorToFetch(response);
       processTokenResponse(data);
-
-      // Clear search query params in the url
-      window.history.replaceState({}, document.title, "/");
     } catch (error) {
       handleError(error);
       setLoading(false);
@@ -215,7 +216,9 @@ export const useSpotifyAuth = () => {
     const code = args.get("code");
 
     if (code) {
-      // We have received the code from spotify and will exchange it for a access_token
+      if (codeExchangeAttempted) return;
+      codeExchangeAttempted = true;
+      window.history.replaceState({}, document.title, "/");
       exchangeToken(code);
     } else if (accessToken && refreshToken && expiresAt) {
       // We are already authorized and reload our tokens from localStorage

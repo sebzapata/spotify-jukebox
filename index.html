@@ -8,6 +8,15 @@
   </head>
   <body class="min-h-screen bg-gray-50 dark:bg-neutral-800">
     <div id="root"></div>
+    <script>
+      window.onSpotifyWebPlaybackSDKReady = () => {
+        window.__spotifySDKReady = true;
+        if (window.__initSpotifyPlayer) {
+          window.__initSpotifyPlayer();
+        }
+      };
+    </script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
